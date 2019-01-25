@@ -1,0 +1,267 @@
+---
+title: 'Single Function Lightning Talk: base::by()'
+author:
+- <h3>Parfait Gasana, Chicago R User Group (CRUG)<h3>
+- <h3>January 23, 2019</h3>
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+<div style="float:right"><img src="images/function.png" width="150px"/></div>
+<br/>
+
+<style type="text/css">
+.main-container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 14px;
+}
+</style>
+
+## Apply Family
+
+- ### R core's signature family of functions 
+- ### Used to manipulate various objects with equal-length input and output
+- ### From simplified types (vectors, matrices) to complex type (data frames, lists)
+
+<center><img src="images/apply_family.png" /></center>
+
+# `tapply` + `by`: universal need to subset data by groups
+
+- ### Summary stats and hypotheses testing
+- ### Model sensitivity analyses and robustness checks
+- ### Testing and training sets and classifiers
+<br/>
+
+# by {base}
+
+> ?by: Object-oriented wrapper for tapply applied to data frames.
+
+> by(data, INDICES, FUN, ..., simplify = TRUE)
+
+
+<div style="float:right"><img src="images/metra.png" width=200 /></div>
+<br/>
+
+## Metra Ridership Data, 2007 - 2017
+
+```{r}
+metra_ridership <- read.csv('data/MetraRidership.csv')
+
+metra_ridership
+```
+
+
+<center><img src="images/metra_map.jpg" height="10" /></center>
+
+## Classic use of `by`:
+
+```{r}
+summary_list <- by(metra_ridership, metra_ridership$Rail_Line, summary)
+
+summary_list
+```
+
+
+## Alternatives to by()
+
+### `unique()` + `for`
+
+- #### Use of intermediate objects
+- #### Initialize a named list
+- #### Subset with `[` in each iteration
+
+```{r}
+unique_lines <- unique(metra_ridership$Rail_Line)
+df_list <- vector('list', length = length(unique_lines))
+names(df_list) <- unique_lines 
+
+for (line in unique_lines) {
+  tmp <- metra_ridership[metra_ridership$Rail_Line == line,]
+  df_list[[line]] <- tmp[sample(nrow(tmp), 5),]
+}
+```
+
+### `levels()` + `for`
+
+- #### Use of intermediate objects
+- #### Initialize a named list
+- #### Subset with `[` in each iteration
+
+```{r}
+level_lines <- levels(metra_ridership$Rail_Line)
+df_list <- vector('list', length = length(level_lines))
+names(df_list) <- level_lines
+
+for (line in level_lines) {
+  tmp <- metra_ridership[metra_ridership$Rail_Line == line,]
+  df_list[[line]] <- tmp[sample(nrow(tmp), 5),]
+}
+```
+
+### `split` + `lapply`
+
+- #### Nested layered call
+- #### Use of intermediate object
+- #### No function argument in `split`
+
+```{r}
+df_list <- lapply(split(metra_ridership, metra_ridership$Rail_Line), function(sub) 
+                               sub[sample(nrow(sub), 5),]
+            )
+```
+
+### `by`
+
+```{r}
+df_list <-  by(metra_ridership, metra_ridership$Rail_Line, function(sub) sub[sample(nrow(sub), 5),])
+```
+
+
+# Examples using `by`
+
+- ### Function extends to <i>any</i> operation on data frame 
+- ### Returns <i>any</i> object
+
+<div style="float:right"><img src="images/metra_dollar.png" width=150 /></div>
+<br/>
+
+## Metra Assets, Funding, and Revenues Data
+
+```{r}
+# ASSETS
+metra_assets <- read.csv('data/MetraAssets.csv', stringsAsFactors = FALSE)
+metra_assets <- subset(metra_assets, Asset_Type=="Total Capital Assets, net")
+
+# FUNDING
+metra_funding <- read.csv('data/MetraFunding.csv', stringsAsFactors = FALSE)
+metra_funding <- setNames(aggregate(Amount ~ Year, metra_funding, sum), c("Year", "Funding"))
+
+# REVENUES
+metra_revenues <- read.csv('data/MetraRevenues.csv', stringsAsFactors = FALSE)
+metra_revenues <-subset(metra_revenues, (!is.na(Category) | Category != '') & (Revenue_Type=="Total revenues"))
+
+# CHAIN MERGE
+merge_df <- Reduce(function(x, y) merge(x, y, by="Year", all=TRUE), 
+                   list(metra_ridership, metra_assets, metra_funding, metra_revenues))
+```
+
+## Data Analysis
+
+### T-test
+
+```{r}
+options(width=300)
+
+vec_list <- by(merge_df, merge_df$Rail_Line, function(sub)  {
+  res <- t.test(sub$Rides, sub$Actual)
+  c(estimate = res$estimate, p_value = res$p.value)
+})
+
+do.call(rbind, vec_list)
+```
+
+
+### Correlation Test
+
+```{r}
+vec_list <- by(merge_df, merge_df$Rail_Line, function(sub)  {
+  res <- cor.test(sub$Rides, sub$Funding)
+  c(estimate = res$estimate, p_value = res$p.value)
+})
+
+do.call(rbind, vec_list)
+```
+
+### Linear Model
+
+```{r}
+options(width=300)
+
+vec_list <- by(merge_df, merge_df$Rail_Line, function(sub)  {
+  model <- lm(End_Balance ~ Rides, data = sub)
+  res <- summary(model)
+
+  p <- res$fstatistic
+
+  c(rides_coeff = res$coefficients[2,1],
+    rides_t_stat = res$coefficients[2,3],
+    intercept = res$coefficients[2,2],
+    r_sq = res$r.squared,
+    adj_r_sq = res$adj.r.squared,
+    f_stat = p[['value']],
+    p_value = unname(pf(p[1], p[2], p[3], lower.tail=FALSE))  )
+
+})
+
+do.call(rbind, vec_list)
+```
+
+## Data Wrangling
+
+### Highest 3 years by group
+
+```{r}
+sort_df <- with(metra_ridership, metra_ridership[order(Rail_Line, -Rides),])
+
+df_list <- by(sort_df, sort_df$Rail_Line, function(sub) head(sub, 3))
+
+top_metra <- do.call(rbind, unname(df_list))
+top_metra
+```
+
+
+### Random sample of 5 rows by group
+```{r}
+df_list <- by(metra_ridership, metra_ridership$Rail_Line, function(sub) sub[sample(nrow(sub), 5),])
+
+random_metra <- do.call(rbind, unname(df_list))
+random_metra
+```
+
+## Exporting data by group
+
+```{r}
+out <- by(metra_ridership, metra_ridership$Rail_Line, function(sub) {
+     fn <- paste0("data/", gsub("/", "", sub$Rail_Line[1]), ".csv")
+     write.csv(sub, fn, row.names = FALSE)
+})
+```
+
+
+## Plotting data by group
+
+```{r fig1, fig.height = 5, fig.width = 8, fig.align = "center"}
+options(scipen=5)
+
+# USER-DEFINED METHOD
+graph_fct <- function(sub) {
+  dat <- tapply(sub$Rides, sub$Year, sum)
+  bp <- barplot(dat, col=rainbow(11), ylim=range(pretty(c(0, dat))),
+                main=sub$Rail_Line[[1]], ylab="Rides (thousands)", xlab="Year")
+  axis(1, at=bp, labels=2007:2017)
+  mtext('Source: Metra Financial Statements, 2008 - 2017 (Metrarail.com)', side=1, line=4, at=4, cex=0.75)
+}
+
+# RUN PLOTS BY GROUPS
+plots <- by(metra_ridership, metra_ridership$Rail_Line, graph_fct)
+```
+
+<div style="float:right"><img src="images/metra.png" width=150 /></div>
+<br/>
+
+## Overall Graph
+
+```{r fig2, fig.height = 8, fig.width = 10, fig.align = "center"}
+par(mar=c(15,5,4,2)) 
+
+with(subset(metra_ridership, Rail_Line != "Total passenger trips"), { 
+  dat <- tapply(Rides, factor(Rail_Line), sum)
+  bp <- barplot(dat, col=rainbow(11), ylim=range(pretty(c(0, dat))), las=2, cex.main=1.5,
+          main="Total Ridership\nBy Metra Lines 2007-2017", ylab="Rides (thousands)\n", xlab=NULL)
+  mtext('Source: Metra Financial Statements, 2008 - 2017 (Metrarail.com)', side=1, line=12, at=3, cex=0.75)
+})
+```
+

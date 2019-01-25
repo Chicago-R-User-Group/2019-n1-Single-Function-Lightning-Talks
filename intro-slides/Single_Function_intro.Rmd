@@ -1,0 +1,146 @@
+---
+title: "Single Function Lightning Talks"
+author: "Chicago R User Group (CRUG)"
+date: "2019-01-23"
+output: RUGtools::intro_slides
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(RUGtools)
+```
+
+## Chicago R User Group (CRUG) ...
+
+- Happy New YeaR! Welcome new and current useRs! 
+- CRUG enters its 9th year of meetups since 2010!
+- Now reached 3,500 members, one of largest groups in world!
+
+    **Slack**
+    ![Slack icon](images/slack_50x50.png) 
+    [bit.ly/Slack-CRUG](http://bit.ly/Slack-CRUG)
+
+    **Twitter**
+    ![Twitter icon](images/twitter50x41.png)
+    [ChicagoRusers](https://twitter.com/ChicagoRusers)
+
+    **GitHub**
+    ![Github icon](images/GitHub-Mark.png)
+    @[Chicago-R-User-Group](https://github.com/Chicago-R-User-Group)
+
+    **Meetup**
+    ![Meetup icon](images/m_swarm_50x50.png)
+    [ChicagoRUG](https://www.meetup.com/ChicagoRUG/)
+
+    **Website**
+    <img src="images/header-background.png" width="100px">
+    [Chicago-r-user-group.github.io](https://chicago-r-user-group.github.io/)
+
+# Local R News
+
+## 
+![](images/rfinance_conf.png)
+<br/>
+
+From the inaugural conference in 2009, the annual R/Finance conference in Chicago has become the primary meeting for academics and practitioners interested in using R in Finance.
+
+Call for Papers (live today!)
+
+https://uic.cvent.com/rfinance2019CFP
+
+
+## 
+![](images/rladies-chicago_banner.jpg)
+
+<br/>
+Next Meetup: 
+
+- Monday, January 28th: What We Learned at rstudio::conf 2019: Lightning Talks!
+
+For more information find them:
+
+<img src="images/R-LadiesGlobal.png" width="50px"/>https://rladieschicago.org/>
+
+![](images/twitter50x41.png)@[RLadiesChicago](https://twitter.com/RLadiesChicago)
+
+![](images/m_swarm_50x50.png)[Meetup.com/R-Ladies Chicago](https://www.meetup.com/rladies-chicago/)
+
+##
+![](images/RUnconference.png)
+
+<br/>
+
+https://chirunconf.github.io
+
+# Local Chicago Tech
+
+## 
+<img src="images/ChicagoPolygot.jpg" width="100px"/>
+
+**ChicagoPolyglot Winter Mingle**
+
+http://chicagopolyglot.com/
+
+Opportunity to hang out and network with friends and colleagues across Chicago's expansive tech community. The word "polyglot" means "knowing or using several langauges", so look for friends from CJUG, ChiPy, ChicagoRuby and other vibrant Chicago tech meetup groups as we share our passion for learning and technology in a relaxed setting.
+
+Wednesday, January 30, 2019, 6:00 PM – 8:00 PM CST
+
+Sully's House, 1501 N Dayton, Chicago, IL
+
+## 
+![](images/WindyCityDevFest.jpeg)
+
+<br/>
+
+https://windycity.devfest.io/
+
+A community-run conference offering sessions, hack-a-thons, and codelabs across many different technologies.
+
+DePaul University Loop Campus DePaul Center
+
+1 East Jackson, Chicago, IL
+
+
+
+# Anyone hiring R folks? 
+
+# Tonight's Sponsor
+
+## 
+![](images/wework.png)
+
+WeWork provides shared workspaces for technology startup, and services for entrepreneurs, freelancers, startups, small businesses and large enterprises. 
+
+Thanks Dr. Dale Rosenthal for providing his WeWork space for tonight's meetup!
+
+<br/>
+
+![](images/IBM-Logo.jpeg)
+
+
+IBM for sponsoring food and beverages!
+
+
+# Tonight's Event
+
+## Single-Function Lightning Rounds
+
+<img src="images/function.png" width="150px"/>
+
+**Speakers**
+
+1. **Chase Clark** - lengths, 5-10 mins.
+2. **Nathan Frey** - cat, 5-10 mins.
+3. **Brandon Allen** - merge/subset, 10-15 mins.
+4. **Parfait Gasana** - by, 5-10 mins.
+5. **Dale Rosenthal** - optim, 5-10 mins.
+6. **Justin Shea** - data.table::melt, 5-10 mins.
+7. **Ray Buhr** - future.apply::future_lapply, 5-10 mins.
+8. **Brian Burns** - pkgnet::CreatePackageReport, 5-10 mins. 
+
+
+
+
+
+
