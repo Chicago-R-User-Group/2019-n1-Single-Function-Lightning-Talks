@@ -7,11 +7,7 @@ Multiple speakers who presented lightning talks on the usefulness and applicabil
 
 > John Chambers, co-creator of S programming language and R core member.
 
-
-<p align="center">
 <img src="https://github.com/Chicago-R-User-Group/2019-n1-Single-Function-Lightning-Talks/blob/master/base_by/images/function.png" width="200px" />
-</p>
-
 
 ### 1. **Chase Clark** - base::lengths()
 ### 2. **Nathan Frey** - base::cat()
